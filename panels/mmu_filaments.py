@@ -68,6 +68,11 @@ class Panel(ScreenPanel):
             material.get_style_context().add_class("mmu_material_text")
             material.set_xalign(0.1)
 
+            spoolman = self.labels[f'spoolman_{i}'] = Gtk.Label("n/a")
+            spoolman.get_style_context().add_class("mmu_material_text")
+            spoolman.set_xalign(0.1)
+
+
             tools = self.labels[f'tools_{i}'] = Gtk.Label("n/a")
             tools.get_style_context().add_class("mmu_gate_text")
             tools.set_xalign(0)
@@ -76,9 +81,10 @@ class Panel(ScreenPanel):
             edit.connect("clicked", self.select_edit, i)
 
             grid.attach(status_box, 0, i, 3, 1)
-            grid.attach(gate_box,   3, i, 3, 1)
-            grid.attach(color,      6, i, 2, 1)
-            grid.attach(material,   8, i, 3, 1)
+            grid.attach(gate_box,   2, i, 3, 1)
+            grid.attach(color,      5, i, 2, 1)
+            grid.attach(material,   6, i, 3, 1)
+            grid.attach(spoolman,   8, i, 3, 1)
             grid.attach(tools,     11, i, 3, 1)
             grid.attach(edit,      14, i, 2, 1)
 
@@ -198,6 +204,7 @@ class Panel(ScreenPanel):
         mmu = self._printer.get_stat("mmu")
         gate_status = mmu['gate_status']
         gate_material = mmu['gate_material']
+        gate_spoolmanid = mmu['gate_spoolmanid']
         gate_color = mmu['gate_color']
         num_gates = len(gate_status)
 
@@ -212,6 +219,7 @@ class Panel(ScreenPanel):
             self.labels[f'available_{i}'].set_label(status_str)
             self.labels[f'color_{i}'].override_color(Gtk.StateType.NORMAL, color)
             self.labels[f'material_{i}'].set_label(gate_material[i][:6])
+            self.labels[f'spoolman_{i}'].set_label(gate_spoolmanid [i])
             self.labels[f'tools_{i}'].set_label(tool_str)
 
         self.labels['layers'].set_current_page(0) # Gate list layer
@@ -270,13 +278,14 @@ class Panel(ScreenPanel):
                 return
             elif 'mmu' in data:
                 e_data = data['mmu']
-                if 'ttg_map' in e_data or 'gate' in e_data or 'gate_status' in e_data or 'gate_material' in e_data or 'gate_color' in e_data:
+                if 'ttg_map' in e_data or 'gate' in e_data or 'gate_status' in e_data or 'gate_material' in e_data or 'gate_spoolmanId' in e_data or 'gate_color' in e_data:
                     self.activate()
 
     def select_edit(self, widget, sel_gate):
         self.ui_sel_gate = sel_gate
         self.ui_gate_status = self._printer.get_stat('mmu', 'gate_status')[self.ui_sel_gate]
         self.ui_gate_material = self._printer.get_stat('mmu', 'gate_material')[self.ui_sel_gate]
+        self.ui_gate_spoolmanid = self._printer.get_stat('mmu', 'gate_spoolmanId')[self.ui_sel_gate]
         self.ui_gate_color = self._printer.get_stat('mmu', 'gate_color')[self.ui_sel_gate]
         self.labels['layers'].set_current_page(1) # Edit layer
         self.update_edited_gate()
@@ -297,6 +306,7 @@ class Panel(ScreenPanel):
         self.labels[f'available'].set_label(status_str)
         self.labels[f'color'].override_color(Gtk.StateType.NORMAL, color)
         self.labels[f'material'].set_label(self.ui_gate_material[:6])
+        self.labels[f'spoolman'].set_label(self.ui_gate_spoolmanid)
         self.labels[f'tools'].set_label(tool_str)
 
     def select_w3c_color(self, widget):
@@ -324,6 +334,14 @@ class Panel(ScreenPanel):
             self.update_edited_gate()
         dialog.destroy()
 
+    def select_spoolmon(self, widget, icon_pos=None, event=None):
+        text = self.labels['m_entry'].get_text().upper()
+        allowed_chars = set('+-_')
+        material = ''.join(c for c in text if c.isalnum() or c in allowed_chars)
+        self.ui_gate_material = material
+        self.labels['m_entry'].set_text(material)
+        self.update_edited_gate()
+
     def select_material(self, widget, icon_pos=None, event=None):
         text = self.labels['m_entry'].get_text().upper()
         allowed_chars = set('+-_')
@@ -341,7 +359,7 @@ class Panel(ScreenPanel):
 
     def select_save(self, widget):
         self._screen.remove_keyboard()
-        self._screen._ws.klippy.gcode_script(f"MMU_SET_GATE_MAP GATE={self.ui_sel_gate} COLOR={self.ui_gate_color} MATERIAL={self.ui_gate_material} AVAILABLE={self.ui_gate_status} QUIET=1")
+        self._screen._ws.klippy.gcode_script(f"MMU_SET_GATE_MAP GATE={self.ui_sel_gate} COLOR={self.ui_gate_color} MATERIAL={self.ui_gate_material} SPOOLMANID={self.ui_gate_spoolmanid} AVAILABLE={self.ui_gate_status} QUIET=1")
         self.labels['layers'].set_current_page(0) # Gate list layer
 
     def select_cancel_edit(self, widget):
