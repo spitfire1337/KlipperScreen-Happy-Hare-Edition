@@ -173,7 +173,7 @@ class Panel(ScreenPanel):
         self.labels['c_selector'].connect("changed", self.select_w3c_color)
 
         if self.spoolmanEnabled:
-            logging.info(f"Connecting to printer: {json.dumps(self.SPOOLMAN_SPOOLS)}")
+            logging.info(f"Spoolman filament: {json.dumps(self.SPOOLMAN_SPOOLS)}")
             
             self.labels['s_selector'].set_vexpand(False)
             for i in range(len(self.SPOOLMAN_SPOOLS)):
