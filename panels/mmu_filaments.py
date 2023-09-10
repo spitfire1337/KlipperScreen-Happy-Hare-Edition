@@ -40,27 +40,27 @@ class Panel(ScreenPanel):
                   'turquoise', 'violet', 'wheat', 'white', 'whitesmoke', 'yellow', 'yellowgreen']
     
     SPOOLMAN_SPOOLS =[{
-"id": 0,
-"registered": "2019-08-24T14:15:22Z",
-"name": "PolyTerra™ Charcoal Black",
-"vendor": {
-"id": 0,
-"registered": "2019-08-24T14:15:22Z",
-"name": "Polymaker",
-"comment": ""
-},
-"material": "PLA",
-"price": 20,
-"density": 1.24,
-"diameter": 1.75,
-"weight": 1000,
-"spool_weight": 140,
-"article_number": "PM70820",
-"comment": "",
-"settings_extruder_temp": 210,
-"settings_bed_temp": 60,
-"color_hex": "FF0000"
-}]
+                        "id": 0,
+                        "registered": "2019-08-24T14:15:22Z",
+                        "name": "PolyTerra™ Charcoal Black",
+                        "vendor": {
+                        "id": 0,
+                        "registered": "2019-08-24T14:15:22Z",
+                        "name": "Polymaker",
+                        "comment": ""
+                        },
+                        "material": "PLA",
+                        "price": 20,
+                        "density": 1.24,
+                        "diameter": 1.75,
+                        "weight": 1000,
+                        "spool_weight": 140,
+                        "article_number": "PM70820",
+                        "comment": "",
+                        "settings_extruder_temp": 210,
+                        "settings_bed_temp": 60,
+                        "color_hex": "FF0000"
+                    }]
 
     def __init__(self, screen, title):
         super().__init__(screen, title)
@@ -175,7 +175,7 @@ class Panel(ScreenPanel):
         if self.spoolmanEnabled:
             self.labels['s_selector'].set_vexpand(False)
             for i in range(len(self.SPOOLMAN_SPOOLS)):
-                self.labels['s_selector'].append_text(self.SPOOLMAN_SPOOLS[i].id & ':' &self.SPOOLMAN_SPOOLS[i].name)
+                self.labels['s_selector'].append_text(self.SPOOLMAN_SPOOLS[i]['id'] & ':' & self.SPOOLMAN_SPOOLS[i]['name'])
             #self.labels['s_selector'].connect("changed", self.select_w3c_color)
 
         self.labels['c_picker'].set_vexpand(False)
