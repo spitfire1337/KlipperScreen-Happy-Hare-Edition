@@ -204,7 +204,7 @@ class Panel(ScreenPanel):
         mmu = self._printer.get_stat("mmu")
         gate_status = mmu['gate_status']
         gate_material = mmu['gate_material']
-        gate_spoolmanid = mmu['gate_spoolmanid']
+        gate_spoolmanid = mmu['gate_spoolmanId']
         gate_color = mmu['gate_color']
         num_gates = len(gate_status)
 
