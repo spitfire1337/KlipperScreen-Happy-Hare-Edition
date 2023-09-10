@@ -231,7 +231,8 @@ class Panel(ScreenPanel):
         edit_grid.attach(Gtk.Box(),                 8, 3,  1, 1)
         edit_grid.attach(self.labels['m_entry'],    9, 3,  4, 1)
         edit_grid.attach(self.labels['filament'],  13, 3,  3, 1)
-        edit_grid.attach(self.labels['s_selector'], 0, 4,  16, 1)
+        if self.spoolmanEnabled:
+            edit_grid.attach(self.labels['s_selector'], 0, 4,  16, 1)
 
 #        edit_grid.attach(self.labels['cancel'],    14, 3,  2, 1) # No room for this, but back button is good enough
         edit_grid.attach(pad2,                      0, 5, 16, 1)
