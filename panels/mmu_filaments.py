@@ -44,9 +44,13 @@ class Panel(ScreenPanel):
     def __init__(self, screen, title):
         super().__init__(screen, title)
         self.apiClient = screen.apiclient
+
+        self.spoolmanEnabled = self._printer.spoolman
+
         self._materials = Gtk.ListStore(str, str)
         self._model = Gtk.ListStore(SpoolmanSpool.__gtype__)
-        self.load_spools()
+        if self.spoolmanEnabled:
+            self.load_spools()
         self.ui_sel_tool = 0
 
         grid = Gtk.Grid()
@@ -76,25 +80,31 @@ class Panel(ScreenPanel):
             material.get_style_context().add_class("mmu_material_text")
             material.set_xalign(0.1)
 
-            spoolman = self.labels[f'spoolman_{i}'] = Gtk.Label("n/a")
-            spoolman.get_style_context().add_class("mmu_material_text")
-            spoolman.set_xalign(0.1)
-
-
             tools = self.labels[f'tools_{i}'] = Gtk.Label("n/a")
             tools.get_style_context().add_class("mmu_gate_text")
             tools.set_xalign(0)
 
             edit = self.labels[f'edit_{i}'] = self._gtk.Button('mmu_gear', f'Edit', 'color4')
             edit.connect("clicked", self.select_edit, i)
+            if self.spoolmanEnabled:
+                spoolman = self.labels[f'spoolman_{i}'] = Gtk.Label("n/a")
+                spoolman.get_style_context().add_class("mmu_material_text")
+                spoolman.set_xalign(0.1)
 
-            grid.attach(status_box, 0, i, 2, 1)
-            grid.attach(gate_box,   2, i, 2, 1)
-            grid.attach(color,      4, i, 2, 1)
-            grid.attach(material,   6, i, 2, 1)
-            grid.attach(spoolman,   8, i, 2, 1)
-            grid.attach(tools,     11, i, 3, 1)
-            grid.attach(edit,      14, i, 2, 1)
+                grid.attach(status_box, 0, i, 2, 1)
+                grid.attach(gate_box,   2, i, 2, 1)
+                grid.attach(color,      4, i, 2, 1)
+                grid.attach(material,   6, i, 2, 1)
+                grid.attach(spoolman,   8, i, 2, 1)
+                grid.attach(tools,     11, i, 3, 1)
+                grid.attach(edit,      14, i, 2, 1)
+            else:
+                grid.attach(status_box, 0, i, 3, 1)
+                grid.attach(gate_box,   3, i, 3, 1)
+                grid.attach(color,      6, i, 2, 1)
+                grid.attach(material,   8, i, 3, 1)
+                grid.attach(tools,     11, i, 3, 1)
+                grid.attach(edit,      14, i, 2, 1)
 
         self.labels['unknown_icon'] = self._gtk.Image('mmu_unknown').get_pixbuf()
         self.labels['available_icon'] = self._gtk.Image('mmu_tick').get_pixbuf()
@@ -111,7 +121,7 @@ class Panel(ScreenPanel):
             'save': self._gtk.Button('mmu_save', f'Save', 'color3'),
             'c_picker': self._gtk.Button('mmu_color_chooser', None, 'color1', scale=self.bts * 1.2),
             'c_selector': Gtk.ComboBoxText(),
-            's_selector': Gtk.ComboBoxText(self._materials),
+            's_selector': Gtk.ComboBoxText(),
             'm_entry': Gtk.Entry(),
             'filament': Gtk.CheckButton(),
             'cancel': self._gtk.Button('cancel', None, 'color4', scale=self.bts * 1.2),
@@ -141,10 +151,11 @@ class Panel(ScreenPanel):
             self.labels['c_selector'].append_text(self.W3C_COLORS[i])
         self.labels['c_selector'].connect("changed", self.select_w3c_color)
 
-        self.labels['s_selector'].set_vexpand(False)
-        for i in range(len(self.SPOOLMAN_SPOOLS)):
-            self.labels['s_selector'].append_text(self.SPOOLMAN_SPOOLS[i].id & ':' &self.SPOOLMAN_SPOOLS[i].name)
-        #self.labels['s_selector'].connect("changed", self.select_w3c_color)
+        if self.spoolmanEnabled:
+            self.labels['s_selector'].set_vexpand(False)
+            for i in range(len(self.SPOOLMAN_SPOOLS)):
+                self.labels['s_selector'].append_text(self.SPOOLMAN_SPOOLS[i].id & ':' &self.SPOOLMAN_SPOOLS[i].name)
+            #self.labels['s_selector'].connect("changed", self.select_w3c_color)
 
         self.labels['c_picker'].set_vexpand(False)
         self.labels['c_picker'].connect("clicked", self.select_color)
@@ -244,7 +255,8 @@ class Panel(ScreenPanel):
         mmu = self._printer.get_stat("mmu")
         gate_status = mmu['gate_status']
         gate_material = mmu['gate_material']
-        gate_spoolmanid = mmu['gate_spoolman']
+        if self.spoolmanEnabled:
+            gate_spoolmanid = mmu['gate_spoolman']
         gate_color = mmu['gate_color']
         num_gates = len(gate_status)
 
@@ -259,7 +271,8 @@ class Panel(ScreenPanel):
             self.labels[f'available_{i}'].set_label(status_str)
             self.labels[f'color_{i}'].override_color(Gtk.StateType.NORMAL, color)
             self.labels[f'material_{i}'].set_label(gate_material[i][:6])
-            self.labels[f'spoolman_{i}'].set_label(str(gate_spoolmanid [i]))
+            if self.spoolmanEnabled:
+                self.labels[f'spoolman_{i}'].set_label(str(gate_spoolmanid [i]))
             self.labels[f'tools_{i}'].set_label(tool_str)
 
         self.labels['layers'].set_current_page(0) # Gate list layer
@@ -325,7 +338,8 @@ class Panel(ScreenPanel):
         self.ui_sel_gate = sel_gate
         self.ui_gate_status = self._printer.get_stat('mmu', 'gate_status')[self.ui_sel_gate]
         self.ui_gate_material = self._printer.get_stat('mmu', 'gate_material')[self.ui_sel_gate]
-        self.ui_gate_spoolmanid = self._printer.get_stat('mmu', 'gate_spoolman')[self.ui_sel_gate]
+        if self.spoolmanEnabled:
+            self.ui_gate_spoolmanid = self._printer.get_stat('mmu', 'gate_spoolman')[self.ui_sel_gate]
         self.ui_gate_color = self._printer.get_stat('mmu', 'gate_color')[self.ui_sel_gate]
         self.labels['layers'].set_current_page(1) # Edit layer
         self.update_edited_gate()
@@ -346,7 +360,8 @@ class Panel(ScreenPanel):
         self.labels[f'available'].set_label(status_str)
         self.labels[f'color'].override_color(Gtk.StateType.NORMAL, color)
         self.labels[f'material'].set_label(self.ui_gate_material[:6])
-        self.labels[f'spoolman'].set_label(self.ui_gate_spoolmanid)
+        if self.spoolmanEnabled:
+            self.labels[f'spoolman'].set_label(self.ui_gate_spoolmanid)
         self.labels[f'tools'].set_label(tool_str)
 
     def select_w3c_color(self, widget):
@@ -420,7 +435,10 @@ class Panel(ScreenPanel):
 
     def select_save(self, widget):
         self._screen.remove_keyboard()
-        self._screen._ws.klippy.gcode_script(f"MMU_SET_GATE_MAP GATE={self.ui_sel_gate} COLOR={self.ui_gate_color} MATERIAL={self.ui_gate_material} SPOOLMANID={self.ui_gate_spoolmanid} AVAILABLE={self.ui_gate_status} QUIET=1")
+        if self.spoolmanEnabled:
+            self._screen._ws.klippy.gcode_script(f"MMU_SET_GATE_MAP GATE={self.ui_sel_gate} COLOR={self.ui_gate_color} MATERIAL={self.ui_gate_material} SPOOLMANID={self.ui_gate_spoolmanid} AVAILABLE={self.ui_gate_status} QUIET=1")
+        else:
+            self._screen._ws.klippy.gcode_script(f"MMU_SET_GATE_MAP GATE={self.ui_sel_gate} COLOR={self.ui_gate_color} MATERIAL={self.ui_gate_material} AVAILABLE={self.ui_gate_status} QUIET=1")
         self.labels['layers'].set_current_page(0) # Gate list layer
 
     def select_cancel_edit(self, widget):
