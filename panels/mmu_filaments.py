@@ -452,7 +452,7 @@ class Panel(ScreenPanel):
         return default
 
     def select_spoolmon(self, widget, icon_pos=None, event=None):
-        text = self.labels['s_selector'].get_text().upper()
+        text = self.labels['s_selector'].get_active_text()
         spoolId=text.split(':')
         spool = self.first(x for x in self.SPOOLMAN_SPOOLS if x.id == int(spoolId[0])) 
         if spool!=None:
