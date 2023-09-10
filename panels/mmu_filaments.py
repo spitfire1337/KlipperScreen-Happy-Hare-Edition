@@ -4,7 +4,7 @@
 # Copyright (C) 2023  moggieuk#6538 (discord)
 #                     moggieuk@hotmail.com
 #
-import logging, gi
+import logging, gi, json
 
 gi.require_version("Gtk", "3.0")
 
@@ -173,9 +173,12 @@ class Panel(ScreenPanel):
         self.labels['c_selector'].connect("changed", self.select_w3c_color)
 
         if self.spoolmanEnabled:
+            logging.info(f"Connecting to printer: {json.dumps(self.SPOOLMAN_SPOOLS)}")
+            
             self.labels['s_selector'].set_vexpand(False)
-            for i in range(len(self.SPOOLMAN_SPOOLS)):
-                self.labels['s_selector'].append_text(str(self.SPOOLMAN_SPOOLS[i]['id']) + ':' + self.SPOOLMAN_SPOOLS[i]['name'])
+            #for i in range(len(self.SPOOLMAN_SPOOLS)):
+
+                #self.labels['s_selector'].append_text(str(self.SPOOLMAN_SPOOLS[i]['id']) + ':' + self.SPOOLMAN_SPOOLS[i]['name'])
             #self.labels['s_selector'].connect("changed", self.select_w3c_color)
 
         self.labels['c_picker'].set_vexpand(False)
