@@ -11,8 +11,10 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib, Pango, Gdk
 from ks_includes.screen_panel import ScreenPanel
 from panels.spoolman import SpoolmanSpool
+from ks_includes.KlippyRest import KlippyRest
 
 class Panel(ScreenPanel):
+    apiClient: KlippyRest
     TOOL_UNKNOWN = -1
     TOOL_BYPASS = -2
 
