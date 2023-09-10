@@ -10,7 +10,7 @@ gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk, GLib, Pango, Gdk
 from ks_includes.screen_panel import ScreenPanel
-from spoolman import SpoolmanSpool
+from panels.spoolman import SpoolmanSpool
 
 class Panel(ScreenPanel):
     TOOL_UNKNOWN = -1
