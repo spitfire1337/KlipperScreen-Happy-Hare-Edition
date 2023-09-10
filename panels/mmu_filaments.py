@@ -45,7 +45,7 @@ class Panel(ScreenPanel):
         super().__init__(screen, title)
         self.apiClient = screen.apiclient
         self._materials = Gtk.ListStore(str, str)
-        self._model = Gtk.TreeStore(SpoolmanSpool.__gtype__)
+        self._model = Gtk.ListStore(SpoolmanSpool.__gtype__)
         self.load_spools()
         self.ui_sel_tool = 0
 
@@ -231,7 +231,7 @@ class Panel(ScreenPanel):
         materials = []
         for spool in spools["result"]:
             spoolObject = SpoolmanSpool(**spool)
-            self._model.append(None, [spoolObject])
+            self._model.append([spoolObject])
             if spoolObject.filament.material not in materials:
                 materials.append(spoolObject.filament.material)
 
