@@ -179,7 +179,7 @@ class Panel(ScreenPanel):
             for i in range(len(self.SPOOLMAN_SPOOLS)):
 
                 self.labels['s_selector'].append_text(str(self.SPOOLMAN_SPOOLS[i]['id']) + ':' + self.SPOOLMAN_SPOOLS[i]['filament']['name'])
-            #self.labels['s_selector'].connect("changed", self.select_w3c_color)
+            self.labels['s_selector'].connect("changed", self.select_spoolmon)
 
         self.labels['c_picker'].set_vexpand(False)
         self.labels['c_picker'].connect("clicked", self.select_color)
@@ -224,6 +224,8 @@ class Panel(ScreenPanel):
         heading_color.set_yalign(1)
         heading_material = Gtk.Label('Material Type / Availability')
         heading_material.set_yalign(1)
+        heading_spoolman = Gtk.Label('Spoolman Spool')
+        heading_spoolman.set_yalign(1)
 
         edit_grid.attach(current_gate_grid,         0, 0, 16, 1)
         edit_grid.attach(pad1,                      0, 1, 16, 1)
@@ -235,10 +237,13 @@ class Panel(ScreenPanel):
         edit_grid.attach(self.labels['m_entry'],    9, 3,  4, 1)
         edit_grid.attach(self.labels['filament'],  13, 3,  3, 1)
         if self.spoolmanEnabled:
-            edit_grid.attach(self.labels['s_selector'], 0, 4,  16, 1)
+            edit_grid.attach(heading_spoolman,          0, 4,  14, 1)
+            edit_grid.attach(self.labels['s_selector'], 0, 5,  14, 1)
+            edit_grid.attach(pad2,                      0, 6, 16, 1)
 
+        else:
 #        edit_grid.attach(self.labels['cancel'],    14, 3,  2, 1) # No room for this, but back button is good enough
-        edit_grid.attach(pad2,                      0, 5, 16, 1)
+            edit_grid.attach(pad2,                      0, 4, 16, 1)
 
         scroll = self._gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
@@ -435,13 +440,28 @@ class Panel(ScreenPanel):
             self.update_edited_gate()
         dialog.destroy()
 
+    def contains(list, filter):
+        for x in list:
+            if filter(x):
+                return True
+        return False
+    
+    def first(iterable, default=None):
+        for item in iterable:
+            return item
+        return default
+
     def select_spoolmon(self, widget, icon_pos=None, event=None):
-        text = self.labels['m_entry'].get_text().upper()
-        allowed_chars = set('+-_')
-        material = ''.join(c for c in text if c.isalnum() or c in allowed_chars)
-        self.ui_gate_material = material
-        self.labels['m_entry'].set_text(material)
-        self.update_edited_gate()
+        text = self.labels['s_selector'].get_text().upper()
+        spoolId=text.split(':')
+        spool = self.first(x for x in self.SPOOLMAN_SPOOLS if x.id == int(spoolId[0])) 
+        if spool!=None:
+            allowed_chars = set('+-_')
+            material = ''.join(c for c in spool['filament']['material'] if c.isalnum() or c in allowed_chars)
+            self.ui_gate_material = material
+            self.labels['m_entry'].set_text(material)
+            self.ui_gate_color = spool['filament']['color_hex']
+            self.update_edited_gate()
 
     def select_material(self, widget, icon_pos=None, event=None):
         text = self.labels['m_entry'].get_text().upper()
