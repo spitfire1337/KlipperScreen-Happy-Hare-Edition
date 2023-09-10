@@ -41,6 +41,7 @@ class Panel(ScreenPanel):
 
     def __init__(self, screen, title):
         super().__init__(screen, title)
+        self._materials = Gtk.ListStore(str, str)
         self.load_spools()
         self.ui_sel_tool = 0
 
