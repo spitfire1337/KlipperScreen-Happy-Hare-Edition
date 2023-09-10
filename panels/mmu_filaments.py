@@ -80,11 +80,11 @@ class Panel(ScreenPanel):
             edit = self.labels[f'edit_{i}'] = self._gtk.Button('mmu_gear', f'Edit', 'color4')
             edit.connect("clicked", self.select_edit, i)
 
-            grid.attach(status_box, 0, i, 3, 1)
-            grid.attach(gate_box,   2, i, 3, 1)
-            grid.attach(color,      5, i, 2, 1)
-            grid.attach(material,   6, i, 3, 1)
-            grid.attach(spoolman,   8, i, 3, 1)
+            grid.attach(status_box, 0, i, 2, 1)
+            grid.attach(gate_box,   2, i, 2, 1)
+            grid.attach(color,      4, i, 2, 1)
+            grid.attach(material,   6, i, 2, 1)
+            grid.attach(spoolman,   8, i, 2, 1)
             grid.attach(tools,     11, i, 3, 1)
             grid.attach(edit,      14, i, 2, 1)
 
