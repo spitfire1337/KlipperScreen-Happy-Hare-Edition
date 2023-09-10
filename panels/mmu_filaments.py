@@ -43,6 +43,7 @@ class Panel(ScreenPanel):
 
     def __init__(self, screen, title):
         super().__init__(screen, title)
+        self.apiClient = screen.apiclient
         self._materials = Gtk.ListStore(str, str)
         self._model = Gtk.TreeStore(SpoolmanSpool.__gtype__)
         self.load_spools()
