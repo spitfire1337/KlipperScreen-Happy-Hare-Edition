@@ -39,7 +39,28 @@ class Panel(ScreenPanel):
                   'silver', 'skyblue', 'slateblue', 'slategray', 'slategrey', 'snow', 'springgreen', 'steelblue', 'tan', 'teal', 'thistle', 'tomato',
                   'turquoise', 'violet', 'wheat', 'white', 'whitesmoke', 'yellow', 'yellowgreen']
     
-    SPOOLMAN_SPOOLS =[]
+    SPOOLMAN_SPOOLS =[{
+"id": 0,
+"registered": "2019-08-24T14:15:22Z",
+"name": "PolyTerra™ Charcoal Black",
+"vendor": {
+"id": 0,
+"registered": "2019-08-24T14:15:22Z",
+"name": "Polymaker",
+"comment": ""
+},
+"material": "PLA",
+"price": 20,
+"density": 1.24,
+"diameter": 1.75,
+"weight": 1000,
+"spool_weight": 140,
+"article_number": "PM70820",
+"comment": "",
+"settings_extruder_temp": 210,
+"settings_bed_temp": 60,
+"color_hex": "FF0000"
+}]
 
     def __init__(self, screen, title):
         super().__init__(screen, title)
