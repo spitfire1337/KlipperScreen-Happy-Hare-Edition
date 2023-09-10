@@ -285,7 +285,7 @@ class Panel(ScreenPanel):
         self.ui_sel_gate = sel_gate
         self.ui_gate_status = self._printer.get_stat('mmu', 'gate_status')[self.ui_sel_gate]
         self.ui_gate_material = self._printer.get_stat('mmu', 'gate_material')[self.ui_sel_gate]
-        self.ui_gate_spoolmanid = self._printer.get_stat('mmu', 'gate_spoolmanId')[self.ui_sel_gate]
+        self.ui_gate_spoolmanid = self._printer.get_stat('mmu', 'gate_spoolman')[self.ui_sel_gate]
         self.ui_gate_color = self._printer.get_stat('mmu', 'gate_color')[self.ui_sel_gate]
         self.labels['layers'].set_current_page(1) # Edit layer
         self.update_edited_gate()
