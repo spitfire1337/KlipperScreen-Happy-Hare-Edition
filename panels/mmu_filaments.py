@@ -111,7 +111,7 @@ class Panel(ScreenPanel):
             'save': self._gtk.Button('mmu_save', f'Save', 'color3'),
             'c_picker': self._gtk.Button('mmu_color_chooser', None, 'color1', scale=self.bts * 1.2),
             'c_selector': Gtk.ComboBoxText(),
-            's_selector': Gtk.ComboBox.new_with_model(self._materials),
+            's_selector': Gtk.ComboBoxText(self._materials),
             'm_entry': Gtk.Entry(),
             'filament': Gtk.CheckButton(),
             'cancel': self._gtk.Button('cancel', None, 'color4', scale=self.bts * 1.2),
@@ -143,7 +143,7 @@ class Panel(ScreenPanel):
 
         self.labels['s_selector'].set_vexpand(False)
         for i in range(len(self.SPOOLMAN_SPOOLS)):
-            self.labels['s_selector'].append_text(self.SPOOLMAN_SPOOLS[i].name)
+            self.labels['s_selector'].append_text(self.SPOOLMAN_SPOOLS[i].id & ':' &self.SPOOLMAN_SPOOLS[i].name)
         #self.labels['s_selector'].connect("changed", self.select_w3c_color)
 
         self.labels['c_picker'].set_vexpand(False)
