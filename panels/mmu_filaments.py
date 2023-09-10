@@ -219,7 +219,7 @@ class Panel(ScreenPanel):
             self.labels[f'available_{i}'].set_label(status_str)
             self.labels[f'color_{i}'].override_color(Gtk.StateType.NORMAL, color)
             self.labels[f'material_{i}'].set_label(gate_material[i][:6])
-            self.labels[f'spoolman_{i}'].set_label(gate_spoolmanid [i])
+            self.labels[f'spoolman_{i}'].set_label(str(gate_spoolmanid [i]))
             self.labels[f'tools_{i}'].set_label(tool_str)
 
         self.labels['layers'].set_current_page(0) # Gate list layer
