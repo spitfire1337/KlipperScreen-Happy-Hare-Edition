@@ -141,10 +141,10 @@ class Panel(ScreenPanel):
             self.labels['c_selector'].append_text(self.W3C_COLORS[i])
         self.labels['c_selector'].connect("changed", self.select_w3c_color)
 
-        # self.labels['s_selector'].set_vexpand(False)
-        # for i in range(len(self.W3C_COLORS)):
-        #     self.labels['s_selector'].append_text(self.W3C_COLORS[i])
-        # self.labels['s_selector'].connect("changed", self.select_w3c_color)
+        self.labels['s_selector'].set_vexpand(False)
+        for i in range(len(self.SPOOLMAN_SPOOLS)):
+            self.labels['s_selector'].append_text(self.SPOOLMAN_SPOOLS[i].name)
+        #self.labels['s_selector'].connect("changed", self.select_w3c_color)
 
         self.labels['c_picker'].set_vexpand(False)
         self.labels['c_picker'].connect("clicked", self.select_color)
@@ -227,7 +227,7 @@ class Panel(ScreenPanel):
         if not spools or "result" not in spools:
             self._screen.show_error_modal("Exception when trying to fetch spools")
             return
-
+        self.SPOOLMAN_SPOOLS = spools["result"]
         materials = []
         for spool in spools["result"]:
             spoolObject = SpoolmanSpool(**spool)
