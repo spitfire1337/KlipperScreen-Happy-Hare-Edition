@@ -10,6 +10,7 @@ gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk, GLib, Pango, Gdk
 from ks_includes.screen_panel import ScreenPanel
+from spoolman import SpoolmanSpool
 
 class Panel(ScreenPanel):
     TOOL_UNKNOWN = -1
@@ -35,10 +36,12 @@ class Panel(ScreenPanel):
                   'purple', 'rebeccapurple', 'red', 'rosybrown', 'royalblue', 'saddlebrown', 'salmon', 'sandybrown', 'seagreen', 'seashell', 'sienna',
                   'silver', 'skyblue', 'slateblue', 'slategray', 'slategrey', 'snow', 'springgreen', 'steelblue', 'tan', 'teal', 'thistle', 'tomato',
                   'turquoise', 'violet', 'wheat', 'white', 'whitesmoke', 'yellow', 'yellowgreen']
+    
+    SPOOLMAN_SPOOLS =[]
 
     def __init__(self, screen, title):
         super().__init__(screen, title)
-
+        self.load_spools()
         self.ui_sel_tool = 0
 
         grid = Gtk.Grid()
@@ -103,6 +106,7 @@ class Panel(ScreenPanel):
             'save': self._gtk.Button('mmu_save', f'Save', 'color3'),
             'c_picker': self._gtk.Button('mmu_color_chooser', None, 'color1', scale=self.bts * 1.2),
             'c_selector': Gtk.ComboBoxText(),
+            's_selector': Gtk.ComboBoxText(),
             'm_entry': Gtk.Entry(),
             'filament': Gtk.CheckButton(),
             'cancel': self._gtk.Button('cancel', None, 'color4', scale=self.bts * 1.2),
@@ -131,6 +135,11 @@ class Panel(ScreenPanel):
         for i in range(len(self.W3C_COLORS)):
             self.labels['c_selector'].append_text(self.W3C_COLORS[i])
         self.labels['c_selector'].connect("changed", self.select_w3c_color)
+
+        self.labels['s_selector'].set_vexpand(False)
+        for i in range(len(self.W3C_COLORS)):
+            self.labels['s_selector'].append_text(self.W3C_COLORS[i])
+        self.labels['s_selector'].connect("changed", self.select_w3c_color)
 
         self.labels['c_picker'].set_vexpand(False)
         self.labels['c_picker'].connect("clicked", self.select_color)
@@ -185,8 +194,10 @@ class Panel(ScreenPanel):
         edit_grid.attach(Gtk.Box(),                 8, 3,  1, 1)
         edit_grid.attach(self.labels['m_entry'],    9, 3,  4, 1)
         edit_grid.attach(self.labels['filament'],  13, 3,  3, 1)
+        edit_grid.attach(self.labels['s_selector'], 0, 4,  16, 1)
+
 #        edit_grid.attach(self.labels['cancel'],    14, 3,  2, 1) # No room for this, but back button is good enough
-        edit_grid.attach(pad2,                      0, 4, 16, 1)
+        edit_grid.attach(pad2,                      0, 5, 16, 1)
 
         scroll = self._gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
@@ -199,6 +210,30 @@ class Panel(ScreenPanel):
 
         self.content.add(layers)
         self.gate_tool_map = self.build_gate_tool_map()
+
+    def load_spools(self, data=None):
+        hide_archived = self._config.get_config().getboolean("spoolman", "hide_archived", fallback=True)
+        self._model.clear()
+        self._materials.clear()
+        spools = self.apiClient.post_request("server/spoolman/proxy", json={
+            "request_method": "GET",
+            "path": f"/v1/spool?allow_archived={not hide_archived}",
+        })
+        if not spools or "result" not in spools:
+            self._screen.show_error_modal("Exception when trying to fetch spools")
+            return
+
+        materials = []
+        for spool in spools["result"]:
+            spoolObject = SpoolmanSpool(**spool)
+            self._model.append(None, [spoolObject])
+            if spoolObject.filament.material not in materials:
+                materials.append(spoolObject.filament.material)
+
+        materials.sort()
+        self._materials.append([None, _("All")])
+        for material in materials:
+            self._materials.append([material, material])    
 
     def activate(self):
         mmu = self._printer.get_stat("mmu")
@@ -312,6 +347,27 @@ class Panel(ScreenPanel):
     def select_w3c_color(self, widget):
         self.ui_gate_color = self.labels['c_selector'].get_active_text()
         self.update_edited_gate()
+
+    def select_spool(self, widget):
+        width, height = self._screen.get_size()
+        color = self.get_color_details(self.ui_gate_color)
+
+        dialog = Gtk.ColorChooserDialog()
+        dialog.set_rgba(color)
+        dialog.set_use_alpha(False)
+        dialog.get_style_context().add_class("dialog")
+        dialog.set_default_size(width, height)
+        dialog.set_resizable(False)
+        dialog.set_transient_for(self._screen)
+        dialog.set_modal(True)
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            color = dialog.get_rgba()
+            color_str = color.to_string()
+            self.labels['s_selector'].set_active(-1)
+            self.ui_gate_color = self.rgba_to_hex(color)
+            self.update_edited_gate()
+        dialog.destroy()
 
     def select_color(self, widget):
         width, height = self._screen.get_size()
