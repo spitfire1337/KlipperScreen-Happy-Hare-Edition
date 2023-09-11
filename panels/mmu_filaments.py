@@ -170,7 +170,7 @@ class Panel(ScreenPanel):
 
         self.labels['save'].connect("clicked", self.select_save)
 
-        self.labels['s_camera'].connect("clicked", self.select_edit_camera)
+        self.labels['s_camera'].connect("clicked", self.select_edit_camera, self.ui_sel_gate)
 
         self.labels['c_selector'].set_vexpand(False)
         for i in range(len(self.W3C_COLORS)):
