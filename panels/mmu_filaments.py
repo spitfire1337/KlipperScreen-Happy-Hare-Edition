@@ -178,14 +178,13 @@ class Panel(ScreenPanel):
             self.labels['c_selector'].append_text(self.W3C_COLORS[i])
         self.labels['c_selector'].connect("changed", self.select_w3c_color)
 
-        if self.spoolmanEnabled:
-            logging.info(f"Spoolman filament: {json.dumps(self.SPOOLMAN_SPOOLS)}")
-            
+        if self.spoolmanEnabled:          
             self.labels['s_selector'].set_vexpand(False)
+            self.labels['s_selector'].get_style_context()
             for i in range(len(self.SPOOLMAN_SPOOLS)):
-
                 self.labels['s_selector'].append_text(str(self.SPOOLMAN_SPOOLS[i]['id']) + ':' + self.SPOOLMAN_SPOOLS[i]['filament']['name'])
             self.labels['s_selector'].connect("changed", self.select_spoolmon)
+            self.labels['s_selector'].set_entry_text_column(0)
 
         self.labels['c_picker'].set_vexpand(False)
         self.labels['c_picker'].connect("clicked", self.select_color)
@@ -383,6 +382,9 @@ class Panel(ScreenPanel):
         self.labels['m_entry'].set_text(self.ui_gate_material)
         if self.ui_gate_color in self.W3C_COLORS:
             self.labels['c_selector'].set_active(self.W3C_COLORS.index(self.ui_gate_color))
+        spool = next(x for x in self.SPOOLMAN_SPOOLS if x['id'] == int(self.ui_gate_spoolmanid))
+        if spool:
+            self.labels['c_selector'].set_active(str(spool['id']) + ':' + spool['filament']['name'])
         self.labels['filament'].set_active(self.ui_gate_status in (self.GATE_AVAILABLE, self.GATE_AVAILABLE_FROM_BUFFER))
 
     def update_edited_gate(self):
@@ -468,8 +470,6 @@ class Panel(ScreenPanel):
             material = ''.join(c for c in spool['filament']['material'] if c.isalnum() or c in allowed_chars)
             self.ui_gate_material = material
             self.ui_gate_spoolmanid = spoolId[0]
-            self.labels['s_selector'].set_active(-1)
-            self.labels['c_selector'].set_active(-1)
             self.labels['m_entry'].set_text(material)
             self.ui_gate_color = spool['filament']['color_hex']
             self.update_edited_gate()
@@ -490,6 +490,8 @@ class Panel(ScreenPanel):
         self.update_edited_gate()
 
     def select_save(self, widget):
+        self.labels['s_selector'].set_active(-1)
+        self.labels['c_selector'].set_active(-1)
         self._screen.remove_keyboard()
         if self.spoolmanEnabled:
             self._screen._ws.klippy.gcode_script(f"MMU_SET_GATE_MAP GATE={self.ui_sel_gate} COLOR={self.ui_gate_color} MATERIAL={self.ui_gate_material} SPOOLMANID={self.ui_gate_spoolmanid} AVAILABLE={self.ui_gate_status} QUIET=1")
