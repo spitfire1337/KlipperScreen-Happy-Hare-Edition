@@ -23,7 +23,8 @@
         "libopenjp2-7",
         "wireless-tools",
         "libdbus-glib-1-dev",
-        "autoconf"
+        "autoconf",
+        "opencv-python"
     ],
     "arch": [
         "python-virtualenv",
@@ -42,6 +43,7 @@
         "librsvg",
         "openjpeg2",
         "dbus-glib",
-        "autoconf"
+        "autoconf",
+        "opencv-python"
     ]
 }

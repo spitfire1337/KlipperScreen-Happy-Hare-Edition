@@ -4,7 +4,7 @@
 # Copyright (C) 2023  moggieuk#6538 (discord)
 #                     moggieuk@hotmail.com
 #
-import logging, gi, json
+import logging, gi, json, cv2
 
 gi.require_version("Gtk", "3.0")
 
