@@ -76,40 +76,6 @@ verify_home_dirs() {
     echo -e "${INFO}Klipper config directory (${KLIPPER_CONFIG_HOME}) found"
 }
 
-install_packages()
-{
-    echo_text "Update package data"
-    sudo apt-get update
-
-    echo_text "Checking for broken packages..."
-    output=$(dpkg-query -W -f='${db:Status-Abbrev} ${binary:Package}\n' | grep -E ^.[^nci])
-    if [ $? -eq 0 ]; then
-        echo_text "Detected broken packages. Attempting to fix"
-        sudo apt-get -f install
-        output=$(dpkg-query -W -f='${db:Status-Abbrev} ${binary:Package}\n' | grep -E ^.[^nci])
-        if [ $? -eq 0 ]; then
-            echo_error "Unable to fix broken packages. These must be fixed before KlipperScreen can be installed"
-            exit 1
-        fi
-    else
-        echo_ok "No broken packages"
-    fi
-
-    sudo apt-get install -y $PYTHON
-    if [ $? -eq 0 ]; then
-        echo_ok "Installed Python dependencies"
-    else
-        echo_error "Installation of Python dependencies failed ($PYTHON)"
-        exit 1
-    fi
-
-#     ModemManager interferes with klipper comms
-#     on buster it's installed as a dependency of mpv
-#     it doesn't happen on bullseye
-    sudo systemctl mask ModemManager.service
-}
-
-
 install_klipper_screen() {
     echo -e "${INFO}Adding KlipperScreen support for MMU"
     do_install=0
@@ -226,7 +192,6 @@ fi
 
 verify_not_root
 verify_home_dirs
-install_packages
 install_klipper_screen
 install_update_manager
 

@@ -9,4 +9,4 @@ python-mpv==1.0.4;python_version>="3.10"
 six==1.16.0
 dbus-python==1.3.2
 backports.zoneinfo;python_version<"3.9"
-opencv-python==4.8.0
+opencv-python==4.8.0.76
