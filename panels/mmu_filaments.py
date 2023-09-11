@@ -270,7 +270,7 @@ class Panel(ScreenPanel):
             self.labels['s_selector'].get_style_context()
             self.labels['s_selector'].remove_all()
             for i in range(len(self._spoolman_spools)):
-                self.labels['s_selector'].append_text(str(self._spoolman_spools[i]['id']) + ':' +self._spoolman_spools[i]['filament']['vendor']['name'] + ' - '+ self._spoolman_spools[i]['filament']['name'] + ' | ' + self._spoolman_spools[i]['filament']['remaining_weight'] +'g remaining')
+                self.labels['s_selector'].append_text(str(self._spoolman_spools[i]['id']) + ':' +self._spoolman_spools[i]['filament']['vendor']['name'] + ' - '+ self._spoolman_spools[i]['filament']['name'] + ' | ' + str(self._spoolman_spools[i]['filament']['remaining_weight']) +'g remaining')
             self.labels['s_selector'].connect("changed", self.select_spoolmon)
             self.labels['s_selector'].set_entry_text_column(0)
 
