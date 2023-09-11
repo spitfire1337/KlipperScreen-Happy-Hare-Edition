@@ -4,7 +4,7 @@
 # Copyright (C) 2023  moggieuk#6538 (discord)
 #                     moggieuk@hotmail.com
 #
-import logging, gi, json, cv2
+import logging, gi, json, cv2, mpv
 
 gi.require_version("Gtk", "3.0")
 
@@ -12,6 +12,7 @@ from gi.repository import Gtk, GLib, Pango, Gdk
 from ks_includes.screen_panel import ScreenPanel
 from panels.spoolman import SpoolmanSpool
 from ks_includes.KlippyRest import KlippyRest
+from contextlib import suppress
 
 class Panel(ScreenPanel):
     apiClient: KlippyRest
@@ -142,7 +143,7 @@ class Panel(ScreenPanel):
             )
             cam[cam["name"]].set_hexpand(True)
             cam[cam["name"]].set_vexpand(True)
-            #cam[cam["name"]].connect("clicked", self.play, cam)
+            cam[cam["name"]].connect("clicked", self.play, cam)
             camera_box.add(cam[cam["name"]])
 
         #self.scroll = self._gtk.ScrolledWindow()
@@ -288,6 +289,53 @@ class Panel(ScreenPanel):
         self._materials.append([None, _("All")])
         for material in materials:
             self._materials.append([material, material])    
+
+    def play(self, widget, cam):
+        url = cam['stream_url']
+        if url.startswith('/'):
+            logging.info("camera URL is relative")
+            endpoint = self._screen.apiclient.endpoint.split(':')
+            url = f"{endpoint[0]}:{endpoint[1]}{url}"
+        vf = ""
+        if cam["flip_horizontal"]:
+            vf += "hflip,"
+        if cam["flip_vertical"]:
+            vf += "vflip,"
+        vf += f"rotate:{cam['rotation']*3.14159/180}"
+        logging.info(f"video filters: {vf}")
+
+        if self.mpv:
+            self.mpv.terminate()
+        self.mpv = mpv.MPV(fullscreen=True, log_handler=self.log, vo='gpu,wlshm,xv,x11')
+
+        self.mpv.vf = vf
+
+        with suppress(Exception):
+            self.mpv.profile = 'sw-fast'
+
+        # LOW LATENCY PLAYBACK
+        with suppress(Exception):
+            self.mpv.profile = 'low-latency'
+        self.mpv.untimed = True
+        self.mpv.audio = 'no'
+
+        @self.mpv.on_key_press('MBTN_LEFT' or 'MBTN_LEFT_DBL')
+        def clicked():
+            self.mpv.quit(0)
+
+        logging.debug(f"Camera URL: {url}")
+        self.mpv.play(url)
+
+        try:
+            self.mpv.wait_for_playback()
+        except mpv.ShutdownError:
+            logging.info('Exiting Fullscreen')
+        except Exception as e:
+            logging.exception(e)
+        self.mpv.terminate()
+        self.mpv = None
+        if len(self._printer.cameras) == 1:
+            self._screen._menu_go_back()
 
     def activate(self):
         if self.spoolmanEnabled:
