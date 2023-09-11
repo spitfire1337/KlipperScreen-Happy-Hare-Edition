@@ -458,6 +458,7 @@ class Panel(ScreenPanel):
         text = self.labels['s_selector'].get_active_text()
         spoolId=text.split(':')
         spool = self.first(x for x in self.SPOOLMAN_SPOOLS if x.id == int(spoolId[0])) 
+        logging.info(f"Selected Spoolman filament: {json.dumps(spool)}")
         if spool!=None:
             allowed_chars = set('+-_')
             material = ''.join(c for c in spool['filament']['material'] if c.isalnum() or c in allowed_chars)
