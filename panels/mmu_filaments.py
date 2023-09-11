@@ -170,7 +170,7 @@ class Panel(ScreenPanel):
 
         self.labels['save'].connect("clicked", self.select_save)
 
-        self.labels['s_camera'].connect("clicked", self.select_edit_camera, self.ui_sel_gate)
+        self.labels['s_camera'].connect("clicked", self.select_edit_camera)
 
         self.labels['c_selector'].set_vexpand(False)
         for i in range(len(self.W3C_COLORS)):
@@ -382,7 +382,7 @@ class Panel(ScreenPanel):
                 if 'ttg_map' in e_data or 'gate' in e_data or 'gate_status' in e_data or 'gate_material' in e_data or 'gate_spoolmanId' in e_data or 'gate_color' in e_data:
                     self.activate()
 
-    def select_edit_camera(self, widget, sel_gate):
+    def select_edit_camera(self, widget):
         self.labels['layers'].set_current_page(2) # camera layer
         self.update_edited_gate()
 
