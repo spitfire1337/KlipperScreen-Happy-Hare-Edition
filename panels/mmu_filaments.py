@@ -319,9 +319,11 @@ class Panel(ScreenPanel):
         self.mpv.untimed = True
         self.mpv.audio = 'no'
 
+        self.stopQr=False
         @self.mpv.on_key_press('MBTN_LEFT' or 'MBTN_LEFT_DBL')
         def clicked():
             self.mpv.quit(0)
+            self.stopQr=True
 
         logging.debug(f"Camera URL: {url}")
         self.mpv.play(url)
@@ -331,6 +333,8 @@ class Panel(ScreenPanel):
             _, img = cap.read()
             data, bbox, _ = detector.detectAndDecode(img)
             # check if there is a QRCode in the image
+            if self.stopQr:
+                break
             if data:
                 a=data
                 break
