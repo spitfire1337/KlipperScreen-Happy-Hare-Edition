@@ -325,7 +325,23 @@ class Panel(ScreenPanel):
 
         logging.debug(f"Camera URL: {url}")
         self.mpv.play(url)
+        cap = cv2.VideoCapture(url)
+        detector = cv2.QRCodeDetector()
+        while True:
+            _, img = cap.read()
+            data, bbox, _ = detector.detectAndDecode(img)
+            # check if there is a QRCode in the image
+            if data:
+                a=data
+                break
+            #cv2.imshow("QRCODEscanner", img)    
+            if cv2.waitKey(1) == ord("q"):
+                break
 
+        logging.info("Scanned QR code is: %s" % a)
+        cap.release()
+        cv2.destroyAllWindows()
+        self.mpv.quit(0)
         try:
             self.mpv.wait_for_playback()
         except mpv.ShutdownError:
