@@ -143,6 +143,7 @@ class Panel(ScreenPanel):
             'gate_label': Gtk.Label('Gate #0'),
             'color': Gtk.Label('⬤'),
             'material': Gtk.Label('PLA'),
+            'spoolman': Gtk.Label('Unknown'),
             'tools': Gtk.Label("n/a"),
             'save': self._gtk.Button('mmu_save', f'Save', 'color3'),
             'c_picker': self._gtk.Button('mmu_color_chooser', None, 'color1', scale=self.bts * 1.2),
