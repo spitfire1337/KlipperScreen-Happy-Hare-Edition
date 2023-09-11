@@ -261,6 +261,7 @@ class Panel(ScreenPanel):
     def load_spools(self, data=None):
         hide_archived = self._config.get_config().getboolean("spoolman", "hide_archived", fallback=True)
         self._model.clear()
+        self.SPOOLMAN_SPOOLS=[]
         self._materials.clear()
         spools = self.apiClient.post_request("server/spoolman/proxy", json={
             "request_method": "GET",
@@ -291,7 +292,7 @@ class Panel(ScreenPanel):
                 self.labels['s_selector'].append_text(str(self.SPOOLMAN_SPOOLS[i]['id']) + ':' + self.SPOOLMAN_SPOOLS[i]['filament']['name'])
             self.labels['s_selector'].connect("changed", self.select_spoolmon)
             self.labels['s_selector'].set_entry_text_column(0)
-            
+
         mmu = self._printer.get_stat("mmu")
         gate_status = mmu['gate_status']
         gate_material = mmu['gate_material']
