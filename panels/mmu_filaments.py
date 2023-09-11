@@ -460,13 +460,16 @@ class Panel(ScreenPanel):
     def select_spoolmon(self, widget, icon_pos=None, event=None):
         text = self.labels['s_selector'].get_active_text()
         spoolId=text.split(':')
-        spool = self.first(x for x in self.SPOOLMAN_SPOOLS if x.id == int(spoolId[0])) 
+        spool = next(x for x in self.SPOOLMAN_SPOOLS if x['id'] == int(spoolId[0]))
+        #spool = self.first(x for x in self.SPOOLMAN_SPOOLS if x['id'] == int(spoolId[0])) 
         logging.info(f"Selected Spoolman filament: {json.dumps(spool)}")
         if spool!=None:
             allowed_chars = set('+-_')
             material = ''.join(c for c in spool['filament']['material'] if c.isalnum() or c in allowed_chars)
             self.ui_gate_material = material
             self.ui_gate_spoolmanid = spoolId[0]
+            self.labels['s_selector'].set_active(-1)
+            self.labels['c_selector'].set_active(-1)
             self.labels['m_entry'].set_text(material)
             self.ui_gate_color = spool['filament']['color_hex']
             self.update_edited_gate()
