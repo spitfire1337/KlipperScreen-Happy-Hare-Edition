@@ -66,7 +66,7 @@ class Panel(ScreenPanel):
         super().__init__(screen, title)
         self.apiClient = screen.apiclient
 
-        self.spoolmanEnabled = self._printer.spoolman
+        
 
         self._materials = Gtk.ListStore(str, str)
         self._model = Gtk.ListStore(SpoolmanSpool.__gtype__)
@@ -79,6 +79,9 @@ class Panel(ScreenPanel):
         grid.set_row_spacing(10)
 
         mmu = self._printer.get_stat("mmu")
+
+        self.spoolmanEnabled = (self._printer.spoolman & mmu['spoolman']==1)
+
         num_gates = len(mmu['gate_status'])
         for i in range(num_gates):
             status_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
