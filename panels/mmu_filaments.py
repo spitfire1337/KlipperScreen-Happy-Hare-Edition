@@ -391,7 +391,7 @@ class Panel(ScreenPanel):
         self.labels[f'color'].override_color(Gtk.StateType.NORMAL, color)
         self.labels[f'material'].set_label(self.ui_gate_material[:6])
         if self.spoolmanEnabled:
-            self.labels[f'spoolman'].set_label(self.ui_gate_spoolmanid)
+            self.labels[f'spoolman'].set_label(str(self.ui_gate_spoolmanid))
         self.labels[f'tools'].set_label(tool_str)
 
     def select_w3c_color(self, widget):
@@ -459,6 +459,7 @@ class Panel(ScreenPanel):
             allowed_chars = set('+-_')
             material = ''.join(c for c in spool['filament']['material'] if c.isalnum() or c in allowed_chars)
             self.ui_gate_material = material
+            self.ui_gate_spoolmanid = spoolId[0]
             self.labels['m_entry'].set_text(material)
             self.ui_gate_color = spool['filament']['color_hex']
             self.update_edited_gate()
