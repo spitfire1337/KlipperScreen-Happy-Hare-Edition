@@ -66,8 +66,6 @@ class Panel(ScreenPanel):
         super().__init__(screen, title)
         self.apiClient = screen.apiclient
 
-        
-
         self._materials = Gtk.ListStore(str, str)
         self._model = Gtk.ListStore(SpoolmanSpool.__gtype__)
 
@@ -79,10 +77,9 @@ class Panel(ScreenPanel):
 
         mmu = self._printer.get_stat("mmu")
 
-        mmu_conf = self._printer.get_config_section("mmu")
-
-        self.spoolmanEnabled = (self._printer.spoolman)
-
+        self.spoolmanEnabled = self._printer.spoolman
+        if self.spoolmanEnabled:
+            self.load_spools()
         num_gates = len(mmu['gate_status'])
         for i in range(num_gates):
             status_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
@@ -288,6 +285,13 @@ class Panel(ScreenPanel):
     def activate(self):
         if self.spoolmanEnabled:
             self.load_spools()
+            self.labels['s_selector'].set_vexpand(False)
+            self.labels['s_selector'].get_style_context()
+            for i in range(len(self.SPOOLMAN_SPOOLS)):
+                self.labels['s_selector'].append_text(str(self.SPOOLMAN_SPOOLS[i]['id']) + ':' + self.SPOOLMAN_SPOOLS[i]['filament']['name'])
+            self.labels['s_selector'].connect("changed", self.select_spoolmon)
+            self.labels['s_selector'].set_entry_text_column(0)
+            
         mmu = self._printer.get_stat("mmu")
         gate_status = mmu['gate_status']
         gate_material = mmu['gate_material']
