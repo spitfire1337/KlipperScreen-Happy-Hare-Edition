@@ -81,7 +81,7 @@ class Panel(ScreenPanel):
 
         mmu_conf = self._printer.get_config_section("mmu")
 
-        self.spoolmanEnabled = (self._printer.spoolman & mmu_conf['spoolman']==1)
+        self.spoolmanEnabled = (self._printer.spoolman)
         if self.spoolmanEnabled:
             self.load_spools()
         num_gates = len(mmu['gate_status'])
