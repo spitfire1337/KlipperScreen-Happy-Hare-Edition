@@ -82,8 +82,7 @@ class Panel(ScreenPanel):
         mmu_conf = self._printer.get_config_section("mmu")
 
         self.spoolmanEnabled = (self._printer.spoolman)
-        if self.spoolmanEnabled:
-            self.load_spools()
+
         num_gates = len(mmu['gate_status'])
         for i in range(num_gates):
             status_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
@@ -287,6 +286,8 @@ class Panel(ScreenPanel):
             self._materials.append([material, material])    
 
     def activate(self):
+        if self.spoolmanEnabled:
+            self.load_spools()
         mmu = self._printer.get_stat("mmu")
         gate_status = mmu['gate_status']
         gate_material = mmu['gate_material']
@@ -494,7 +495,7 @@ class Panel(ScreenPanel):
         self.labels['c_selector'].set_active(-1)
         self._screen.remove_keyboard()
         if self.spoolmanEnabled:
-            self._screen._ws.klippy.gcode_script(f"MMU_SET_GATE_MAP GATE={self.ui_sel_gate} COLOR={self.ui_gate_color} MATERIAL={self.ui_gate_material} SPOOLMANID={self.ui_gate_spoolmanid} AVAILABLE={self.ui_gate_status} QUIET=1")
+            self._screen._ws.klippy.gcode_script(f"MMU_SET_GATE_MAP GATE={self.ui_sel_gate} COLOR={self.ui_gate_color} MATERIAL={self.ui_gate_material} SPOOLMANID={self.ui_gate_spoolmanid} AVAILABLE={self.ui_gate_status}")
         else:
             self._screen._ws.klippy.gcode_script(f"MMU_SET_GATE_MAP GATE={self.ui_sel_gate} COLOR={self.ui_gate_color} MATERIAL={self.ui_gate_material} AVAILABLE={self.ui_gate_status} QUIET=1")
         self.labels['layers'].set_current_page(0) # Gate list layer
