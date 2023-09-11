@@ -568,3 +568,7 @@ class Panel(ScreenPanel):
         self._screen.remove_keyboard()
         self.labels['layers'].set_current_page(0) # Gate list layer
 
+    def log(self, loglevel, component, message):
+        logging.debug(f'[{loglevel}] {component}: {message}')
+        if loglevel == 'error' and 'No Xvideo support found' not in message:
+            self._screen.show_popup_message(f'{message}')
