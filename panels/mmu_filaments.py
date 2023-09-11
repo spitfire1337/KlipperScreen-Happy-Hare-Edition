@@ -326,6 +326,7 @@ class Panel(ScreenPanel):
             self.stopQr=True
 
         logging.debug(f"Camera URL: {url}")
+        a=None
         self.mpv.play(url)
         cap = cv2.VideoCapture(url)
         detector = cv2.QRCodeDetector()
@@ -339,7 +340,7 @@ class Panel(ScreenPanel):
                 a=data
                 break
             #cv2.imshow("QRCODEscanner", img)    
-            if cv2.waitKey(1) == ord("q"):
+            if cv2.waitKey(0):
                 break
 
         logging.info("Scanned QR code is: %s" % a)
