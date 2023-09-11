@@ -340,7 +340,7 @@ class Panel(ScreenPanel):
                 a=data
                 break
             #cv2.imshow("QRCODEscanner", img)    
-            if cv2.waitKey(0):
+            if cv2.waitKey(1) :
                 break
 
         logging.info("Scanned QR code is: %s" % a)
