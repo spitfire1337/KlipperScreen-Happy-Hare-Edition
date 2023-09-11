@@ -39,28 +39,7 @@ class Panel(ScreenPanel):
                   'silver', 'skyblue', 'slateblue', 'slategray', 'slategrey', 'snow', 'springgreen', 'steelblue', 'tan', 'teal', 'thistle', 'tomato',
                   'turquoise', 'violet', 'wheat', 'white', 'whitesmoke', 'yellow', 'yellowgreen']
     
-    SPOOLMAN_SPOOLS =[{
-                        "id": 0,
-                        "registered": "2019-08-24T14:15:22Z",
-                        "name": "PolyTerra™ Charcoal Black",
-                        "vendor": {
-                        "id": 0,
-                        "registered": "2019-08-24T14:15:22Z",
-                        "name": "Polymaker",
-                        "comment": ""
-                        },
-                        "material": "PLA",
-                        "price": 20,
-                        "density": 1.24,
-                        "diameter": 1.75,
-                        "weight": 1000,
-                        "spool_weight": 140,
-                        "article_number": "PM70820",
-                        "comment": "",
-                        "settings_extruder_temp": 210,
-                        "settings_bed_temp": 60,
-                        "color_hex": "FF0000"
-                    }]
+    SPOOLMAN_SPOOLS =[]
 
     def __init__(self, screen, title):
         super().__init__(screen, title)
@@ -261,6 +240,7 @@ class Panel(ScreenPanel):
     def load_spools(self, data=None):
         hide_archived = self._config.get_config().getboolean("spoolman", "hide_archived", fallback=True)
         self._model.clear()
+        del self.SPOOLMAN_SPOOLS[:]
         self.SPOOLMAN_SPOOLS=[]
         self._materials.clear()
         spools = self.apiClient.post_request("server/spoolman/proxy", json={
