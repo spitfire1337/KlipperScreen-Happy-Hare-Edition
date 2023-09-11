@@ -243,6 +243,7 @@ class Panel(ScreenPanel):
         if self.spoolmanEnabled:
             edit_grid.attach(heading_spoolman,          0, 4,  14, 1)
             edit_grid.attach(self.labels['s_selector'], 0, 5,  12, 1)
+            edit_grid.attach(self.labels['s_camera'],   13, 5,  3, 1)
             edit_grid.attach(pad2,                      0, 6, 16, 1)
 
         else:
