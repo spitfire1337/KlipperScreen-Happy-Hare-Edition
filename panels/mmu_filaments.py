@@ -39,7 +39,6 @@ class Panel(ScreenPanel):
                   'silver', 'skyblue', 'slateblue', 'slategray', 'slategrey', 'snow', 'springgreen', 'steelblue', 'tan', 'teal', 'thistle', 'tomato',
                   'turquoise', 'violet', 'wheat', 'white', 'whitesmoke', 'yellow', 'yellowgreen']
     
-    SPOOLMAN_SPOOLS =[]
 
     def __init__(self, screen, title):
         super().__init__(screen, title)
@@ -55,6 +54,7 @@ class Panel(ScreenPanel):
         grid.set_row_spacing(10)
 
         mmu = self._printer.get_stat("mmu")
+        self._spoolman_spools=[]
 
         self.spoolmanEnabled = self._printer.spoolman
         if self.spoolmanEnabled:
@@ -156,8 +156,8 @@ class Panel(ScreenPanel):
         if self.spoolmanEnabled:          
             self.labels['s_selector'].set_vexpand(False)
             self.labels['s_selector'].get_style_context()
-            for i in range(len(self.SPOOLMAN_SPOOLS)):
-                self.labels['s_selector'].append_text(str(self.SPOOLMAN_SPOOLS[i]['id']) + ':' + self.SPOOLMAN_SPOOLS[i]['filament']['name'])
+            for i in range(len(self._spoolman_spools)):
+                self.labels['s_selector'].append_text(str(self._spoolman_spools[i]['id']) + ':' + self._spoolman_spools[i]['filament']['name'])
             self.labels['s_selector'].connect("changed", self.select_spoolmon)
             self.labels['s_selector'].set_entry_text_column(0)
 
@@ -241,7 +241,7 @@ class Panel(ScreenPanel):
         hide_archived = self._config.get_config().getboolean("spoolman", "hide_archived", fallback=True)
         self._model.clear()
         #del self.SPOOLMAN_SPOOLS[:]
-        self.SPOOLMAN_SPOOLS.clear()
+        self._spoolman_spools.clear()
         self._materials.clear()
         spools = self.apiClient.post_request("server/spoolman/proxy", json={
             "request_method": "GET",
@@ -250,7 +250,7 @@ class Panel(ScreenPanel):
         if not spools or "result" not in spools:
             self._screen.show_error_modal("Exception when trying to fetch spools")
             return
-        self.SPOOLMAN_SPOOLS = spools["result"]
+        self._spoolman_spools = spools["result"]
         materials = []
         for spool in spools["result"]:
             spoolObject = SpoolmanSpool(**spool)
@@ -268,8 +268,9 @@ class Panel(ScreenPanel):
             self.load_spools()
             self.labels['s_selector'].set_vexpand(False)
             self.labels['s_selector'].get_style_context()
-            for i in range(len(self.SPOOLMAN_SPOOLS)):
-                self.labels['s_selector'].append_text(str(self.SPOOLMAN_SPOOLS[i]['id']) + ':' + self.SPOOLMAN_SPOOLS[i]['filament']['name'])
+            self.labels['s_selector'].remove_all()
+            for i in range(len(self._spoolman_spools)):
+                self.labels['s_selector'].append_text(str(self._spoolman_spools[i]['id']) + ':' + self._spoolman_spools[i]['filament']['name'])
             self.labels['s_selector'].connect("changed", self.select_spoolmon)
             self.labels['s_selector'].set_entry_text_column(0)
 
