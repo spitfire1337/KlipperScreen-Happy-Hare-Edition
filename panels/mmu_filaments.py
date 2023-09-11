@@ -470,7 +470,7 @@ class Panel(ScreenPanel):
             self.labels['c_selector'].set_active(self.W3C_COLORS.index(self.ui_gate_color))
         spool = next(x for x in self._spoolman_spools if x['id'] == int(self.ui_gate_spoolmanid))
         if spool:
-            self.labels['c_selector'].set_active(str(spool['id']) + ':' + spool['filament']['name'])
+            self.labels['c_selector'].set_active(self._spoolman_spools.index(spool))
         self.labels['filament'].set_active(self.ui_gate_status in (self.GATE_AVAILABLE, self.GATE_AVAILABLE_FROM_BUFFER))
 
     def update_edited_gate(self):
@@ -547,7 +547,7 @@ class Panel(ScreenPanel):
 
     def select_spoolmon(self, widget, icon_pos=None, event=None):
         text = self.labels['s_selector'].get_active_text()
-        spoolId=text.split(':')
+        spoolId=str(text).split(':')
         spool = next(x for x in self._spoolman_spools if x['id'] == int(spoolId[0]))
         #spool = self.first(x for x in self.SPOOLMAN_SPOOLS if x['id'] == int(spoolId[0])) 
         logging.info(f"Selected Spoolman filament: {json.dumps(spool)}")
