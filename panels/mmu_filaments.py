@@ -240,8 +240,8 @@ class Panel(ScreenPanel):
     def load_spools(self, data=None):
         hide_archived = self._config.get_config().getboolean("spoolman", "hide_archived", fallback=True)
         self._model.clear()
-        del self.SPOOLMAN_SPOOLS[:]
-        self.SPOOLMAN_SPOOLS=[]
+        #del self.SPOOLMAN_SPOOLS[:]
+        self.SPOOLMAN_SPOOLS.clear()
         self._materials.clear()
         spools = self.apiClient.post_request("server/spoolman/proxy", json={
             "request_method": "GET",
