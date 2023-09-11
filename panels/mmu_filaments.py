@@ -43,6 +43,7 @@ class Panel(ScreenPanel):
     def __init__(self, screen, title):
         super().__init__(screen, title)
         self.apiClient = screen.apiclient
+        self.mpv = None
 
         self._materials = Gtk.ListStore(str, str)
         self._model = Gtk.ListStore(SpoolmanSpool.__gtype__)
@@ -124,10 +125,31 @@ class Panel(ScreenPanel):
             'c_picker': self._gtk.Button('mmu_color_chooser', None, 'color1', scale=self.bts * 1.2),
             'c_selector': Gtk.ComboBoxText(),
             's_selector': Gtk.ComboBoxText(),
+            's_camera': self._gtk.Button('camera', f'QR Scan', 'color3'),
             'm_entry': Gtk.Entry(),
             'filament': Gtk.CheckButton(),
             'cancel': self._gtk.Button('cancel', None, 'color4', scale=self.bts * 1.2),
         } )
+
+        camera_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        for i, cam in enumerate(self._printer.cameras):
+            if not cam["enabled"]:
+                continue
+            logging.info(cam)
+            cam[cam["name"]] = self._gtk.Button(
+                image_name="camera", label=cam["name"], style=f"color{i % 4 + 1}",
+                scale=self.bts, position=Gtk.PositionType.LEFT, lines=1
+            )
+            cam[cam["name"]].set_hexpand(True)
+            cam[cam["name"]].set_vexpand(True)
+            #cam[cam["name"]].connect("clicked", self.play, cam)
+            camera_box.add(cam[cam["name"]])
+
+        #self.scroll = self._gtk.ScrolledWindow()
+        #self.scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        #self.scroll.add(camera_box)
+        #self.content.add(self.scroll)
+        #self.content.show_all()
 
         edit_status_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         edit_status_box.pack_start(self.labels['status'], True, True, 0)
@@ -147,6 +169,8 @@ class Panel(ScreenPanel):
         self.labels['tools'].set_xalign(0)
 
         self.labels['save'].connect("clicked", self.select_save)
+
+        self.labels['s_camera'].connect("clicked", self.select_edit_camera)
 
         self.labels['c_selector'].set_vexpand(False)
         for i in range(len(self.W3C_COLORS)):
@@ -218,7 +242,7 @@ class Panel(ScreenPanel):
         edit_grid.attach(self.labels['filament'],  13, 3,  3, 1)
         if self.spoolmanEnabled:
             edit_grid.attach(heading_spoolman,          0, 4,  14, 1)
-            edit_grid.attach(self.labels['s_selector'], 0, 5,  14, 1)
+            edit_grid.attach(self.labels['s_selector'], 0, 5,  12, 1)
             edit_grid.attach(pad2,                      0, 6, 16, 1)
 
         else:
@@ -233,6 +257,7 @@ class Panel(ScreenPanel):
         layers.set_show_tabs(False)
         layers.insert_page(scroll, None, 0)
         layers.insert_page(edit_grid, None, 1)
+        layers.insert_page(camera_box, None, 2)
 
         self.content.add(layers)
         self.gate_tool_map = self.build_gate_tool_map()
@@ -355,6 +380,10 @@ class Panel(ScreenPanel):
                 e_data = data['mmu']
                 if 'ttg_map' in e_data or 'gate' in e_data or 'gate_status' in e_data or 'gate_material' in e_data or 'gate_spoolmanId' in e_data or 'gate_color' in e_data:
                     self.activate()
+
+    def select_edit_camera(self, widget, sel_gate):
+        self.labels['layers'].set_current_page(2) # camera layer
+        self.update_edited_gate()
 
     def select_edit(self, widget, sel_gate):
         self.ui_sel_gate = sel_gate
